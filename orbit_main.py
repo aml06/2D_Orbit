@@ -51,9 +51,9 @@ def __main__():
         
         # Draw figures on screen
         window.fill(BLACK)
-        py.draw.circle(window, RED, (theSun.position.x, theSun.position.y), 100)
+        py.draw.circle(window, RED, (theSun.position.x, theSun.position.y), 20)
         for i in planetList:
-            py.draw.circle(window, BLUE, (i.position.x, i.position.y),10)
+            py.draw.circle(window, BLUE, (i.position.x, i.position.y),8)
         py.display.update()
         
     py.quit()
