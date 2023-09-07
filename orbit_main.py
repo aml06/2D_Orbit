@@ -26,7 +26,7 @@ def __main__():
     
     # make my objects
     theSun = star(SUN_MASS, vector(500,500), vector(0,0))
-    planet_One = planet(PLANET_ONE_MASS, vector(200,200), vector(0.1,0))
+    planet_One = planet(PLANET_ONE_MASS, vector(200,200), vector(0.1,-0.1))
     planetList = [planet_One]
     
     while running:
