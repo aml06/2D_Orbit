@@ -10,9 +10,12 @@ import numpy as np
 import math
 
 def __main__():
+    global SCALING_FACTOR
+    SCALING_FACTOR = 10
+    FPS = 60
     # Some constants
     WIDTH, HEIGHT = 1000, 1000
-    SUN_MASS = 100
+    SUN_MASS = SCALING_FACTOR * 200
     PLANET_ONE_MASS = 1
     BLACK = (0,0,0)
     WHITE = (255,255,255)
@@ -26,10 +29,23 @@ def __main__():
     
     # make my objects
     theSun = star(SUN_MASS, vector(500,500), vector(0,0))
-    planet_One = planet(PLANET_ONE_MASS, vector(200,200), vector(0.1,-0.1))
+    planet_One = planet(PLANET_ONE_MASS, vector(250,250), vector(SCALING_FACTOR * 0.1,SCALING_FACTOR * -0.1))
     planetList = [planet_One]
     
+    planet_Two = planet(PLANET_ONE_MASS * 1, vector(400, 400), vector(SCALING_FACTOR * 0.2, SCALING_FACTOR * -0.1))
+    planetList.append(planet_Two)
+    
+    planet_Three = planet(PLANET_ONE_MASS * 1, vector(600,600), vector(SCALING_FACTOR * -0.1, SCALING_FACTOR * 0.1))
+    planetList.append(planet_Three)
+    
+    #plusScale = Rectangle(50, 50, 50, 50, RED)
+    #minusScale = Rectangle(150, 50, 50, 50, BLUE)
+    
+    clock = py.time.Clock()
+    
     while running:
+        
+        clock.tick(FPS)
         for event in py.event.get():
             if event.type == py.QUIT:
                 running = False
@@ -43,9 +59,21 @@ def __main__():
                 #Program quits with escape
                 if event.key == py.K_ESCAPE:
                     running = False
-        
+            """  
+            if event.type == py.MOUSEBUTTONDOWN:
+                    # Get the position of the mouse click
+                    mouseX, mouseY = py.mouse.get_pos()
+                    if plusScale.collidepoint(mouseX, mouseY):
+                        SCALING_FACTOR += 1
+                    if minusScale.collidepoint(mouseX, mouseY):
+                        SCALING_FACTOR -= 1
+        """
         # Calculate gravitational force and update planet position.
         for body in planetList:
+            for second_body in planetList:
+                if second_body != body:
+                    body.gravity(second_body)
+                    body.updatePosition()
             body.gravity(theSun)
             body.updatePosition()
         
@@ -54,6 +82,8 @@ def __main__():
         py.draw.circle(window, RED, (theSun.position.x, theSun.position.y), 20)
         for i in planetList:
             py.draw.circle(window, BLUE, (i.position.x, i.position.y),8)
+        #plusScale.draw(window)
+        #minusScale.draw(window)
         py.display.update()
         
     py.quit()
@@ -93,7 +123,7 @@ class stellar_object():
         distance = math.sqrt(direction.x ** 2 + direction.y ** 2)
         
         #calculate magnitude of gravitational force
-        grav = (gConstant * self.mass * other_object.mass) / (distance ** 2)
+        grav = SCALING_FACTOR * (gConstant * self.mass * other_object.mass) / (distance ** 2)
         
         #normalize the direction vector
         direction.x = direction.x / distance
@@ -120,5 +150,18 @@ class vector:
     def __init__(self, x, y):
         self.x = x
         self.y =y
+
+class Rectangle(py.Rect):
+    def __init__(self, x, y, width, height, color):
+        super().__init__(x,y,width, height)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = color
+        
+    def draw(self, surface):
+        py.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height))
+        
 
 __main__()
